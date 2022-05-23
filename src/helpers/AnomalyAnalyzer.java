@@ -9,20 +9,28 @@ import java.util.Map;
 
 public class AnomalyAnalyzer {
 
+    //variable that contains all the values for each of the IoT devices
     private Map<String, IotContainer> iotNormalValues;
 
     public AnomalyAnalyzer(){
         iotNormalValues = new HashMap<>();
     }
 
+    //method to add a record to the map (an IoT device with its corresponding bounds
     public void addToNormalMap(String iot, IotContainer iotValues){
         iotNormalValues.put(iot,iotValues);
     }
 
+    //retrieves the map that contains the IoT devices with their corresponding values
     public Map<String, IotContainer> getIotNormalValues(){
         return iotNormalValues;
     }
 
+    //verifies if the input-output that is generated represents an anomaly or not
+    //for the values that are sent by the control centre, it is checked if any of them is out of bounds
+    //for the IoT calls, it checks if there were any previous calls with that specific IoT and if there is, it checks if the value is between bounds
+    //for the output it checks if it exceeds the bounds
+    //returns true if there is no anomaly and false if it is anomaly
     public boolean isAnomaly(String processOutput, String key){
         String[] rows = processOutput.split("\n");
         String ccArray = rows[0].split(": ")[1];
@@ -37,7 +45,7 @@ public class AnomalyAnalyzer {
         boolean outputRange = outputValue >= getIotNormalValues().get(key).getOutputBounds()[0] && outputValue <= getIotNormalValues().get(key).getOutputBounds()[1];
 
         List<Boolean> iotBounds = new ArrayList<>();
-        for(int row = 1; row < rows.length - 2; row++){
+        for(int row = 1; row < rows.length - 1; row++){
             String[] splitRow = rows[row].split(": ");
             String iot = "IoT" + splitRow[0].split(" ")[2];
             int value = Integer.parseInt(splitRow[1]);
