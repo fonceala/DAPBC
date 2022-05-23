@@ -55,15 +55,12 @@ public class AnomalyAnalyzer {
 
         boolean iotRange = true;
         for(Boolean bool: iotBounds){
-            if(!bool){
+            if (!bool) {
                 iotRange = false;
+                break;
             }
         }
 
-        if(iotRange && ccRange && outputRange){
-            return true;
-        }
-
-        return false;
+        return iotRange && ccRange && outputRange;
     }
 }
